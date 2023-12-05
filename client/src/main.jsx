@@ -11,6 +11,8 @@ import './index.css'
 import Layout from './Layout.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
+import SignUp from './pages/SignUp.jsx';
+import SignIn from './pages/SignIn.jsx';
 
 
 
@@ -26,6 +28,14 @@ const router = createBrowserRouter([
       {
         path: "/about",
         element: <About />
+      },
+      {
+        path: "/signup",
+        element: <SignUp />
+      },
+      {
+        path: "/signin",
+        element: <SignIn />
       },
     ],
   },
