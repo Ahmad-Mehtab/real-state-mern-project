@@ -21,11 +21,11 @@ function SignUp() {
     });
     const resposeData = await res.json();
     setLoading(false)
-    setError(false)
     if (resposeData.success == false) {
       setError(true);
       return;
     }
+    setError(false);
   } catch (error) {
       console.log('error: ', error);
       setLoading(false);
@@ -69,17 +69,16 @@ function SignUp() {
 
         <button
           type="submit" disabled={loading}
-          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-        >
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
           {loading ? "loading..." : "SIGN Up" }
         </button>
-        <h4 className="text-lg text-red-500">{error && "Something wrong!!" }</h4>
       </form>
       <div className="flex gap-2 mt-5">
         <p>Have an account?</p>
         <Link to={"/signin"}>
           <span className="text-blue-700">SIGN IN</span>
         </Link>
+        <h4 className="text-lg text-red-500 ml-auto">{error && "Something wrong!!" }</h4> 
       </div>
     </div>
   );
