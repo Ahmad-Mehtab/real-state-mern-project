@@ -5,7 +5,7 @@ import {FaSearch} from 'react-icons/fa'
 
 function Header() {
   return (
-    <header className='bg-slate-200 shadow-md'>
+    <header className='bg-slate-200 shadow-md h-20'>
     <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
       <Link to='/'>
         <h1 className='font-bold text-sm sm:text-xl flex flex-wrap'>
@@ -14,7 +14,6 @@ function Header() {
         </h1>
       </Link>
       <form
-        
         className='bg-slate-100 p-3 rounded-lg flex items-center'
       >
         <input
@@ -38,6 +37,13 @@ function Header() {
             About
           </li>
         </Link>
+       
+        <Link to='/signup'>
+          <li className='hidden sm:inline text-slate-700 hover:underline'>
+            Sign Up
+          </li>
+        </Link>
+        
         <Link to='/profile'>
           
         </Link>

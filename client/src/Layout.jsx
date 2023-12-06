@@ -6,9 +6,9 @@ import { Outlet } from 'react-router-dom'
 
 function Layout() {
   return (
-    <div>
+    <div className='h-screen grid grid-rows-between'>
         <Header />
-        <Outlet />
+        <Outlet  />
         <Footer />
     </div>
   )
