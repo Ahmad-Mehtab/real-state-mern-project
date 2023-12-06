@@ -1,35 +1,41 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useDispatch, useSelector } from "react-redux";
+import {signInStart, signInSuccess, signInFailure } from "../redux/authSlice"
+
 
 function SignIn() {
+ 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
+  const dispatch = useDispatch()
+  // const {loading, userData} = useSelector((state) => state.auth)
   const signIn = async (data) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const res = await fetch("/api/auth/signin", {
-      method: "POST",
-      headers : { 'Content-Type': 'application/json'},
-      body : JSON.stringify(data)
-    });
-    const resposeData = await res.json();
-    setLoading(false)
-    if (resposeData.success == false) {
-      setError(true);
-      return;
-    }
-    setError(false);
-  } catch (error) {
-      console.log('error: ', error);
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res.status === 401) {
+        toast.error("User Not Found");
+        setLoading(false);
+        return;
+      }
+      const resposeData = await res.json();
+      if (resposeData) toast.success("Login successful");
       setLoading(false);
-      setError(true);
+    } catch (error) {
+      setLoading(false);
+      toast.error("User Not Found");
     }
   };
 
@@ -37,7 +43,6 @@ function SignIn() {
     <div className="p-3 max-w-lg mx-auto w-full">
       <h1 className="text-3xl text-center font-semibold my-7">Sign In</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(signIn)}>
-   
         <input
           type="email"
           placeholder="email"
@@ -62,9 +67,11 @@ function SignIn() {
         />
 
         <button
-          type="submit" disabled={loading}
-          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-          {loading ? "loading..." : "SIGN IN" }
+          type="submit"
+          disabled={loading}
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+        >
+          {loading ? "loading..." : "SIGN IN"}
         </button>
       </form>
       <div className="flex gap-2 mt-5">
@@ -72,7 +79,7 @@ function SignIn() {
         <Link to={"/signup"}>
           <span className="text-blue-700">SIGN UP</span>
         </Link>
-        <h4 className="text-lg text-red-500 ml-auto">{error && "Something wrong!!" }</h4> 
+        <ToastContainer position="top-right" />
       </div>
     </div>
   );
