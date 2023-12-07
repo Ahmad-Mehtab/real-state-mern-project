@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
@@ -8,7 +8,7 @@ import {signInStart, signInSuccess, signInFailure } from "../redux/authSlice"
 
 
 function SignIn() {
- 
+const navigate = useNavigate(); 
   const {
     register,
     handleSubmit,
@@ -31,7 +31,9 @@ function SignIn() {
         return;
       }
       const resposeData = await res.json();
+      console.log('resposeData: ', resposeData);
       if (resposeData) toast.success("Login successful");
+      navigate("/profile");
       dispatch(signInSuccess(resposeData));
     } catch (error) {
       dispatch(signInFailure());
