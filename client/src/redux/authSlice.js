@@ -6,21 +6,22 @@ const initialState = {
 }
 
 const authSlice = createSlice({
-    name: 'auth',
+    name: 'user',
     initialState,
     reducers: {
-        signInStart: (state, action) => {
-            state.loading = false;
+        signInStart: (state) => {
+            state.loading = true;
             // state.userData = action.payload.userData;
             // console.log('action.payload.userData: ', action.payload.userData);
         },
         signInSuccess: (state, action) => {
-            state.loading = true;
-            state.userData = action.payload.userData;
+           
+            state.loading = false;
+            state.userData = action.payload;
         },
         signInFailure: (state, action) => {
-            state.loading = true;
-            state.userData = action.payload.userData;
+            state.loading = false;
+            state.userData = action.payload;
         }
     },
 })

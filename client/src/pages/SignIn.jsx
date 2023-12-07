@@ -14,12 +14,12 @@ function SignIn() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const dispatch = useDispatch()
-  // const {loading, userData} = useSelector((state) => state.auth)
+  const {loading} = useSelector((state) => state.user)
   const signIn = async (data) => {
     try {
-      setLoading(true);
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -27,14 +27,14 @@ function SignIn() {
       });
       if (res.status === 401) {
         toast.error("User Not Found");
-        setLoading(false);
+        dispatch(signInFailure());
         return;
       }
       const resposeData = await res.json();
       if (resposeData) toast.success("Login successful");
-      setLoading(false);
+      dispatch(signInSuccess(resposeData));
     } catch (error) {
-      setLoading(false);
+      dispatch(signInFailure());
       toast.error("User Not Found");
     }
   };

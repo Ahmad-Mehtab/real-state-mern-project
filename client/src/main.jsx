@@ -1,21 +1,21 @@
-import React from 'react'
+import React from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
 } from "react-router-dom";
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-import Layout from './Layout.jsx';
-import Home from './pages/Home.jsx';
-import About from './pages/About.jsx';
-import SignUp from './pages/SignUp.jsx';
-import SignIn from './pages/SignIn.jsx';
-import store from './redux/Store.js';
-import { Provider } from 'react-redux'
-
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+import "./index.css";
+import Layout from "./Layout.jsx";
+import Home from "./pages/Home.jsx";
+import About from "./pages/About.jsx";
+import SignUp from "./pages/SignUp.jsx";
+import SignIn from "./pages/SignIn.jsx";
+import {store, persistor} from "./redux/Store.js";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
 const router = createBrowserRouter([
   {
@@ -28,15 +28,15 @@ const router = createBrowserRouter([
       },
       {
         path: "/about",
-        element: <About />
+        element: <About />,
       },
       {
         path: "/signup",
-        element: <SignUp />
+        element: <SignUp />,
       },
       {
         path: "/signin",
-        element: <SignIn />
+        element: <SignIn />,
       },
     ],
   },
@@ -45,7 +45,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
-    <RouterProvider router={router} />
+      <PersistGate loading={null} persistor={persistor}>
+        <RouterProvider router={router} />
+      </PersistGate>
     </Provider>
   </React.StrictMode>
-)
+);
