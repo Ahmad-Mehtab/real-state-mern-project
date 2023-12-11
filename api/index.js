@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGO)
   })
   .catch((err) => {
     console.log(err);
-  });
+  }); 
 
   const __dirname = path.resolve();
 
