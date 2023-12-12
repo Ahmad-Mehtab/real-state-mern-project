@@ -21,10 +21,15 @@ const authSlice = createSlice({
         },
         signInFailure: (state, action) => {
             state.loading = false;
+            // state.userData = action.payload;
+        },
+        ProfileUpdateSuccess: (state, action) => {
+           
+            state.loading = false;
             state.userData = action.payload;
-        }
+        },
     },
 })
 
-export const { signInStart, signInSuccess, signInFailure } = authSlice.actions
+export const { signInStart, signInSuccess, signInFailure, ProfileUpdateSuccess } = authSlice.actions
 export default authSlice.reducer

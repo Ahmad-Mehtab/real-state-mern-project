@@ -25,13 +25,13 @@ const navigate = useNavigate();
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (res.status === 401) {
+      if (res.status === 401 || res.status === 404) {
         toast.error("User Not Found");
         dispatch(signInFailure());
         return;
       }
       const resposeData = await res.json();
-      console.log('resposeData: ', resposeData);
+
       if (resposeData) toast.success("Login successful");
       navigate("/profile");
       dispatch(signInSuccess(resposeData));

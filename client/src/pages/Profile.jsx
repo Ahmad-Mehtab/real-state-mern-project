@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getDownloadURL,
   getStorage,
@@ -7,15 +7,20 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { app } from "../firebase";
+import { ProfileUpdateSuccess } from "../redux/authSlice";
+
 function Profile() {
-  const { userData } = useSelector((state) => state.user);
+  const { userData,  } = useSelector((state) => state.user);
+
   const fileRef = useRef(null);
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
-  console.log("formData: ", formData);
+  const dispatch =  useDispatch();
+
 
   // firebase storage
   // allow read;
@@ -66,9 +71,10 @@ function Profile() {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-    console.log(formData);
-  };
+    const {name, value } = e.target;
+    setFormData({ ...formData, [name]: value }); // Update state with name:value pair
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -77,11 +83,11 @@ function Profile() {
         headers : { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)  
        });
-       console.log('Response status:', res.status);
        const responseData = await res.json();
-       console.log('responseData: ', responseData);
+       toast.success("Profile Updated Successful");
+       dispatch(ProfileUpdateSuccess(responseData));
     } catch (error) {
-      console.log(error);
+      toast.error("Update Failed");
     }
   };
 
@@ -127,7 +133,7 @@ function Profile() {
           name="email"
         />
         <input
-          type="text"
+          type="password"
           name="password"
           className="bg-white w-full p-3 rounded-md border border-slate-300"
           onChange={handleChange}
