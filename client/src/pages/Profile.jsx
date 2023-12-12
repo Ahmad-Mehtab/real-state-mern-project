@@ -109,6 +109,21 @@ function Profile() {
       toast.error(error.message)
     }
   };
+  const UserSignOut = async () => {
+    try {
+      const dltUser = await fetch(`/api/auth/signout`);
+      const dltedUsr = await dltUser.json();
+      if (dltedUsr.message === false) {
+        toast.error("SignOut Failed");
+        return false;
+      }
+      toast.success("Successfully deleted");
+      dispatch(signOutSuccess());
+      // navigate("/signin");
+    } catch (error) {
+      toast.error(error.message)
+    }
+  };
 
   return (
     <div className="mx-auto max-w-lg w-full px-4">
@@ -168,7 +183,7 @@ function Profile() {
         >
           Delete account
         </span>
-        <span className="font-medium text-red-600">Sign out</span>
+        <span className="font-medium text-red-600" onClick={UserSignOut}>Sign out</span>
       </div>
       <ToastContainer position="top-right" />
     </div>
