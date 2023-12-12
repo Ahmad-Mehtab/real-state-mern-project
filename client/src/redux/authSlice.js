@@ -15,7 +15,7 @@ const authSlice = createSlice({
             // console.log('action.payload.userData: ', action.payload.userData);
         },
         signInSuccess: (state, action) => {
-           
+
             state.loading = false;
             state.userData = action.payload;
         },
@@ -24,12 +24,22 @@ const authSlice = createSlice({
             // state.userData = action.payload;
         },
         ProfileUpdateSuccess: (state, action) => {
-           
+
             state.loading = false;
             state.userData = action.payload;
+        },
+        signOutSuccess: (state) => {
+            state.loading = false;
+            state.userData = null;
         },
     },
 })
 
-export const { signInStart, signInSuccess, signInFailure, ProfileUpdateSuccess } = authSlice.actions
+export const {
+    signInStart,
+    signInSuccess,
+    signInFailure,
+    ProfileUpdateSuccess,
+    signOutSuccess
+} = authSlice.actions
 export default authSlice.reducer

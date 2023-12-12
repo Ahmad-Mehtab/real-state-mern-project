@@ -9,18 +9,19 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { app } from "../firebase";
-import { ProfileUpdateSuccess } from "../redux/authSlice";
+import { ProfileUpdateSuccess, signOutSuccess } from "../redux/authSlice";
+import { useNavigate } from "react-router-dom";
 
 function Profile() {
-  const { userData,  } = useSelector((state) => state.user);
+  const { userData } = useSelector((state) => state.user);
 
   const fileRef = useRef(null);
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
-  const dispatch =  useDispatch();
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // firebase storage
   // allow read;
@@ -71,23 +72,41 @@ function Profile() {
   };
 
   const handleChange = (e) => {
-    const {name, value } = e.target;
+    const { name, value } = e.target;
     setFormData({ ...formData, [name]: value }); // Update state with name:value pair
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await fetch(`/api/user/update/${userData._id}`, {
-        method: 'POST',
-        headers : { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)  
-       });
-       const responseData = await res.json();
-       toast.success("Profile Updated Successful");
-       dispatch(ProfileUpdateSuccess(responseData));
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const responseData = await res.json();
+      toast.success("Profile Updated Successful");
+      dispatch(ProfileUpdateSuccess(responseData));
     } catch (error) {
       toast.error("Update Failed");
+    }
+  };
+
+  const handleUserDlt = async () => {
+    try {
+      const dltUser = await fetch(`/api/user/delete/${userData._id}`, {
+        method: "DELETE",
+      });
+      const dltedUsr = await dltUser.json();
+      if (dltedUsr.message === false && dltedUsr.statusCode === 401) {
+        toast.error("Delete Failed");
+        return false;
+      }
+      toast.success("Successfully deleted");
+      dispatch(signOutSuccess());
+      // navigate("/signin");
+    } catch (error) {
+      toast.error(error.message)
     }
   };
 
@@ -137,14 +156,18 @@ function Profile() {
           name="password"
           className="bg-white w-full p-3 rounded-md border border-slate-300"
           onChange={handleChange}
-        
         />
         <button className="w-full p-3 bg-slate-600 text-white text-lg font-medium rounded-md">
           Update
         </button>
       </form>
       <div className="mx-auto px-1 my-3 flex justify-between">
-        <span className="font-medium text-red-600">Delete account</span>
+        <span
+          className="font-medium text-red-600 cursor-default"
+          onClick={handleUserDlt}
+        >
+          Delete account
+        </span>
         <span className="font-medium text-red-600">Sign out</span>
       </div>
       <ToastContainer position="top-right" />
