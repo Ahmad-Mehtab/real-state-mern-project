@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.btn-confirm {
+    background-color: #dc3545; 
+    color: white; 
+    padding: 5px 8px;    
+    border-radius: 5px;
+    outline: none;
+}
+  
+  .btn-cancel {
+    background-color: #6c757d; 
+    color: white; 
+    padding: 5px 8px;
+    border-radius: 5px;
+    outline: none;
+}
+
 body{
     background-color: rgb(241, 245, 241);
 }

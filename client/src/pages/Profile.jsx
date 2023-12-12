@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { app } from "../firebase";
 import { ProfileUpdateSuccess, signOutSuccess } from "../redux/authSlice";
 import { useNavigate } from "react-router-dom";
+import SweetAlertCom from "./SweetAlert";
 
 function Profile() {
   const { userData } = useSelector((state) => state.user);
@@ -18,7 +19,9 @@ function Profile() {
   const fileRef = useRef(null);
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
-  const [fileUploadError, setFileUploadError] = useState(false);
+  // const [fileUploadError, setFileUploadError] = useState(false);
+  const [showSignOutAlert, setShowSignOutAlert] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [formData, setFormData] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -50,7 +53,6 @@ function Profile() {
       },
       (error) => {
         console.log("error: ", error);
-        setFileUploadError(true);
         toast.error("Error image upload(image must be less then 2 mb");
         setFilePerc(0); // Reset progress if there's an error
       },
@@ -59,12 +61,10 @@ function Profile() {
           .then((downloadURL) => {
             setFormData({ ...formData, avatar: downloadURL });
             toast.success("image uploaded successfully");
-            setFileUploadError(false); // Reset fileUploadError on successful upload
             setFilePerc(0); // Set progress to 100 after successful upload
           })
           .catch((error) => {
             console.error("Error getting download URL:", error);
-            setFileUploadError(true);
             setFilePerc(0); // Reset progress if there's an error
           });
       }
@@ -102,11 +102,11 @@ function Profile() {
         toast.error("Delete Failed");
         return false;
       }
-      toast.success("Successfully deleted");
       dispatch(signOutSuccess());
+      setShowDeleteAlert(false);
       // navigate("/signin");
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
   };
   const UserSignOut = async () => {
@@ -117,12 +117,16 @@ function Profile() {
         toast.error("SignOut Failed");
         return false;
       }
-      toast.success("Successfully deleted");
+      setShowSignOutAlert(false);
       dispatch(signOutSuccess());
-      // navigate("/signin");
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
+  };
+
+  const onCancel = () => {
+    setShowSignOutAlert(false);
+    setShowDeleteAlert(false);
   };
 
   return (
@@ -179,12 +183,23 @@ function Profile() {
       <div className="mx-auto px-1 my-3 flex justify-between">
         <span
           className="font-medium text-red-600 cursor-default"
-          onClick={handleUserDlt}
+          onClick={() => setShowDeleteAlert(true)}
         >
           Delete account
         </span>
-        <span className="font-medium text-red-600" onClick={UserSignOut}>Sign out</span>
+        <span
+          className="font-medium text-red-600"
+          onClick={() => setShowSignOutAlert(true)}
+        >
+          Sign out
+        </span>
       </div>
+      {showSignOutAlert  && (
+        <SweetAlertCom handleClick={UserSignOut} onCancel={onCancel} message={"yes, sign out"}  />
+      )}
+      {showDeleteAlert && (
+        <SweetAlertCom handleClick={handleUserDlt} onCancel={onCancel} message={"yes, delete"} />
+      )}
       <ToastContainer position="top-right" />
     </div>
   );
