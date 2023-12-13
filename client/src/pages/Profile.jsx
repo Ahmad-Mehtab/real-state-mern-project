@@ -10,7 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { app } from "../firebase";
 import { ProfileUpdateSuccess, signOutSuccess } from "../redux/authSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SweetAlertCom from "./SweetAlert";
 
 function Profile() {
@@ -179,6 +179,11 @@ function Profile() {
         <button className="w-full p-3 bg-slate-600 text-white text-lg font-medium rounded-md">
           Update
         </button>
+        <Link to={"/create-listing"} className="w-full">
+          <button className="w-full p-3 bg-green-600 text-white text-lg font-medium rounded-md">
+            Create Listing
+          </button>
+        </Link>
       </form>
       <div className="mx-auto px-1 my-3 flex justify-between">
         <span
@@ -194,11 +199,19 @@ function Profile() {
           Sign out
         </span>
       </div>
-      {showSignOutAlert  && (
-        <SweetAlertCom handleClick={UserSignOut} onCancel={onCancel} message={"yes, sign out"}  />
+      {showSignOutAlert && (
+        <SweetAlertCom
+          handleClick={UserSignOut}
+          onCancel={onCancel}
+          message={"yes, sign out"}
+        />
       )}
       {showDeleteAlert && (
-        <SweetAlertCom handleClick={handleUserDlt} onCancel={onCancel} message={"yes, delete"} />
+        <SweetAlertCom
+          handleClick={handleUserDlt}
+          onCancel={onCancel}
+          message={"yes, delete"}
+        />
       )}
       <ToastContainer position="top-right" />
     </div>
