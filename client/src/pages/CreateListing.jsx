@@ -16,8 +16,20 @@ function CreateListing() {
   const [uploadLoading, setUploadLoading] = useState(false);
   const [formData, setFormData] = useState({
     imageUrls: [],
+    name: 'ahmad',
+    description: '',
+    address: '',
+    type: "rent",
+    bed: 1,
+    bath: 1,
+    regularPrice: 500,
+    disPrice: 0,
+    furnished: false,
+    parking: false,
+    offer: false,
   });
-  const style = { color: "black", fontSize: "1.5em" }
+  console.log(formData.type);
+
   const submitImage = () => {
     if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
       const promises = [];
@@ -30,9 +42,7 @@ function CreateListing() {
           imageUrls: formData.imageUrls.concat(urls),
         });
         setUploadLoading(false);
-        
       });
-
     } else {
       toast.error("images exceeded limit! upload upto 6 images");
     }
@@ -50,8 +60,7 @@ function CreateListing() {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(`Upload is ${progress}% done`);
-        setUploadLoading(true);
-          
+          setUploadLoading(true);
         },
 
         (error) => {
@@ -71,6 +80,11 @@ function CreateListing() {
     );
     setFormData({ ...formData, imageUrls: updatedImageUrls });
   };
+
+  const handleFormSubmit = (e) => {
+    console.log(e);
+    setFormData({ ...formData, type: e.target.id });
+  };
   return (
     <main className="xs:p-6">
       <h1 className="text-center text-2xl mb-3">Create a Listing</h1>
@@ -80,50 +94,57 @@ function CreateListing() {
             type="text"
             name="name"
             placeholder="Name"
+            id="name"
+            required
             className="bg-white w-full p-3 rounded-md border border-slate-300 my-1.5"
-            //   onChange={handleChange}
+            onChange={handleFormSubmit}
+            value={formData.name}
           />
           <textarea
             name="description"
-            id=""
+            id="description"
             placeholder="Description"
             className="bg-white w-full p-3 rounded-md border border-slate-300 my-1.5"
             rows="2"
+            onChange={handleFormSubmit}
+            value={formData.description}
           ></textarea>
           <input
             type="text"
             name="address"
+            id="address"
             placeholder="Address"
             className="bg-white w-full p-3 rounded-md border border-slate-300 my-1.5"
-            //   onChange={handleChange}
+            onChange={handleFormSubmit}
+            value={formData.address}
           />
           <div className="flex gap-6 items-center  flex-wrap mt-3">
             <div className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4" />
+              <input type="checkbox" className="w-4 h-4" id="sell" checked={formData.type === 'sell'} onChange={handleFormSubmit} />
               <label htmlFor="" className="font-medium">
                 Sell
               </label>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4" />
+              <input type="checkbox" className="w-4 h-4" id="rent" checked={formData.type === 'rent'} onChange={handleFormSubmit} />
               <label htmlFor="" className="font-medium">
                 Rent
               </label>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4" />
+              <input type="checkbox" className="w-4 h-4" id="parking" checked={formData.parking} onChange={handleFormSubmit} />
               <label htmlFor="" className="font-medium">
                 Parking Spot
               </label>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4" />
+              <input type="checkbox" className="w-4 h-4" id="furnished" checked={formData.furnished} onChange={handleFormSubmit} />
               <label htmlFor="" className="font-medium">
                 Furnished
               </label>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4" />
+              <input type="checkbox" className="w-4 h-4" id="offer" checked={formData.offer} onChange={handleFormSubmit} />
               <label htmlFor="" className="font-medium">
                 Offer
               </label>
@@ -136,6 +157,9 @@ function CreateListing() {
                 min="1"
                 max="10"
                 className="p-3 rounded-md"
+                id="bed"
+                value={formData.bed}
+                onChange={handleFormSubmit}
               />
               <label htmlFor="" className="">
                 Beds
@@ -146,7 +170,10 @@ function CreateListing() {
                 type="number"
                 min="1"
                 max="10"
+                id="bath"
                 className="p-3 rounded-md"
+                value={formData.bath}
+                onChange={handleFormSubmit}
               />
               <label htmlFor="" className="">
                 Baths
@@ -157,7 +184,10 @@ function CreateListing() {
                 type="number"
                 min="1"
                 max="10"
+                id="regularPrice"
                 className="p-3 rounded-md"
+                value={formData.regularPrice}
+                onChange={handleFormSubmit}
               />
               <label htmlFor="" className="">
                 Regular price <p className="text-xs text-center">($/month)</p>
@@ -168,7 +198,10 @@ function CreateListing() {
                 type="number"
                 min="1"
                 max="10"
+                id="discountPrice"
                 className="p-3 rounded-md"
+                value={formData.disPrice}
+                onChange={handleFormSubmit}
               />
               <label htmlFor="" className="">
                 Discounted price
@@ -194,8 +227,12 @@ function CreateListing() {
               type="button"
               className="border  bg-blue-500 text-white p-2 rounded-md"
               onClick={submitImage}
-            > 
-              {uploadLoading ? <ThreeDots className="font-normal  w-12"  /> : "Upload"}
+            >
+              {uploadLoading ? (
+                <ThreeDots className="font-normal  w-12" />
+              ) : (
+                "Upload"
+              )}
             </button>
           </div>
           <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-3">
@@ -210,7 +247,7 @@ function CreateListing() {
               />
               <button
                 className="bg-red-700 text-white p-2 text-sm font-medium rounded-lg hover:opacity-95"
-                onClick={() => imageUrl}
+                onClick={() => handleDelete(imageUrl)}
               >
                 Delete
               </button>
