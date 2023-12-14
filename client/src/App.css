@@ -18,7 +18,10 @@
     border-radius: 5px;
     outline: none;
 }
-
+.custom-puff {
+    fill: green; /* Change 'green' to your desired color */
+    color: black;
+  }
 body{
     background-color: rgb(241, 245, 241);
 }

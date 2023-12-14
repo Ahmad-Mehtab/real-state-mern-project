@@ -1,27 +1,76 @@
 import React, { useState } from "react";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { app } from "../firebase";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Puff from "react-loading-icons/dist/esm/components/puff";
+import ThreeDots from "react-loading-icons/dist/esm/components/three-dots";
 
 function CreateListing() {
   const [files, setFiles] = useState([]);
+  const [uploadLoading, setUploadLoading] = useState(false);
   const [formData, setFormData] = useState({
     imageUrls: [],
   });
-console.log(formData);
+  const style = { color: "black", fontSize: "1.5em" }
   const submitImage = () => {
-    if (files.length > 0 && files.length < 7) {
+    if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
       const promises = [];
       for (let i = 0; i < files.length; i++) {
-        promises.push(storageImage(files[i]));
+        promises.push(storeImage(files[i]));
       }
-    
+      Promise.all(promises).then((urls) => {
+        setFormData({
+          ...formData,
+          imageUrls: formData.imageUrls.concat(urls),
+        });
+        setUploadLoading(false);
+        
+      });
+
+    } else {
+      toast.error("images exceeded limit! upload upto 6 images");
     }
   };
 
-  const storageImage = (files) => {
-    console.log('files: ', files);
-    //   Promise.all(files).then((urls) =>{
-    //     setFormData({...formData, imageUrls: formData.imageUrls.concat(urls)});
-    //   });
-  }
+  const storeImage = async (file) => {
+    return new Promise((resolve, reject) => {
+      const storage = getStorage(app);
+      const fileName = new Date().getTime() + file.name;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`Upload is ${progress}% done`);
+        setUploadLoading(true);
+          
+        },
+
+        (error) => {
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            resolve(downloadURL);
+          });
+        }
+      );
+    });
+  };
+  const handleDelete = (imageUrl) => {
+    const updatedImageUrls = formData.imageUrls.filter(
+      (url) => url !== imageUrl
+    );
+    setFormData({ ...formData, imageUrls: updatedImageUrls });
+  };
   return (
     <main className="xs:p-6">
       <h1 className="text-center text-2xl mb-3">Create a Listing</h1>
@@ -143,17 +192,33 @@ console.log(formData);
             />
             <button
               type="button"
-              className="border border-green-500 p-2 rounded-md"
+              className="border  bg-blue-500 text-white p-2 rounded-md"
               onClick={submitImage}
-            >
-              Upload
+            > 
+              {uploadLoading ? <ThreeDots className="font-normal  w-12"  /> : "Upload"}
             </button>
           </div>
           <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-3">
             Create list
           </button>
+          {formData.imageUrls.map((imageUrl) => (
+            <div key={imageUrl} className="flex justify-between items-center">
+              <img
+                src={imageUrl}
+                className="w-20 h-20 object-cover my-1 border-1 border-black"
+                alt="messing"
+              />
+              <button
+                className="bg-red-700 text-white p-2 text-sm font-medium rounded-lg hover:opacity-95"
+                onClick={() => imageUrl}
+              >
+                Delete
+              </button>
+            </div>
+          ))}
         </div>
       </form>
+      <ToastContainer position="top-right" />
     </main>
   );
 }
