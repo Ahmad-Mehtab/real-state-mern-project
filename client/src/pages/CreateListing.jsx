@@ -8,27 +8,30 @@ import {
 import { app } from "../firebase";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Puff from "react-loading-icons/dist/esm/components/puff";
 import ThreeDots from "react-loading-icons/dist/esm/components/three-dots";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function CreateListing() {
   const [files, setFiles] = useState([]);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [formData, setFormData] = useState({
     imageUrls: [],
-    name: 'ahmad',
-    description: '',
-    address: '',
+    name: "",
+    description: "",
+    address: "",
     type: "rent",
-    bed: 1,
-    bath: 1,
-    regularPrice: 500,
-    disPrice: 0,
+    bedrooms: 1,
+    bathrooms: 1,
+    regularPrice: 0,
+    discountPrice: 0,
     furnished: false,
     parking: false,
     offer: false,
   });
-  console.log(formData.type);
+
+  const { userData } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
   const submitImage = () => {
     if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
@@ -43,6 +46,8 @@ function CreateListing() {
         });
         setUploadLoading(false);
       });
+    } else if (files.length === 0) {
+      toast.error("please select images");
     } else {
       toast.error("images exceeded limit! upload upto 6 images");
     }
@@ -82,18 +87,93 @@ function CreateListing() {
   };
 
   const handleFormSubmit = (e) => {
-    console.log(e);
-    setFormData({ ...formData, type: e.target.id });
+    const targetId = e.target.id;
+
+    if (targetId === "rent" || targetId === "sell") {
+      setFormData({ ...formData, type: targetId });
+    }
+    if (
+      targetId === "furnished" ||
+      targetId === "parking" ||
+      targetId === "offer"
+    ) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [targetId]: !prevFormData[targetId],
+      }));
+    }
+    if (
+      e.target.type === "number" ||
+      e.target.type === "text" ||
+      e.target.type === "textarea"
+    ) {
+      setFormData({ ...formData, [targetId]: e.target.value });
+    }
+  };
+
+  const submitHandle = async (e) => {
+    e.preventDefault();
+    if (formData.imageUrls.length < 1) {
+      toast.error("Please select an image");
+      return;
+    }
+    if (formData.regularPrice < formData.discountPrice) {
+      toast.error("Regular price should be greater than Discount price");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/listing/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          userRef: userData._id,
+        }),
+      });
+      const data = await res.json();
+      if (data.success === false || data.statusCode === 500) {
+        toast.error("Something getting wrong");
+        return;
+      }
+      toast.success("Form submitted successfully");
+      resetForm();
+      setTimeout(() => {
+        navigate("/listing")
+      }, 3000);
+    } catch (error) {
+      toast.error(error);
+    }
+  };
+  const resetForm = () => {
+    setFormData({
+      imageUrls: [],
+      name: "",
+      description: "",
+      address: "",
+      type: "rent",
+      bedrooms: 1,
+      bathrooms: 1,
+      regularPrice: 0,
+      discountPrice: 0,
+      furnished: false,
+      parking: false,
+      offer: false,
+    });
+    setFiles([]);
   };
   return (
     <main className="xs:p-6">
       <h1 className="text-center text-2xl mb-3">Create a Listing</h1>
-      <form className="max-w-4xl flex-col md:flex-row mx-auto flex gap-4 ">
+      <form
+        className="max-w-4xl flex-col md:flex-row mx-auto flex gap-4"
+        onSubmit={submitHandle}
+      >
         <div className="flex flex-col flex-1">
           <input
             type="text"
             name="name"
-            placeholder="Name"
+            placeholder="Title"
             id="name"
             required
             className="bg-white w-full p-3 rounded-md border border-slate-300 my-1.5"
@@ -120,31 +200,61 @@ function CreateListing() {
           />
           <div className="flex gap-6 items-center  flex-wrap mt-3">
             <div className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4" id="sell" checked={formData.type === 'sell'} onChange={handleFormSubmit} />
+              <input
+                type="checkbox"
+                className="w-4 h-4"
+                id="sell"
+                checked={formData.type === "sell"}
+                onChange={handleFormSubmit}
+              />
               <label htmlFor="" className="font-medium">
                 Sell
               </label>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4" id="rent" checked={formData.type === 'rent'} onChange={handleFormSubmit} />
+              <input
+                type="checkbox"
+                className="w-4 h-4"
+                id="rent"
+                checked={formData.type === "rent"}
+                onChange={handleFormSubmit}
+              />
               <label htmlFor="" className="font-medium">
                 Rent
               </label>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4" id="parking" checked={formData.parking} onChange={handleFormSubmit} />
+              <input
+                type="checkbox"
+                className="w-4 h-4"
+                id="parking"
+                checked={formData.parking}
+                onChange={handleFormSubmit}
+              />
               <label htmlFor="" className="font-medium">
                 Parking Spot
               </label>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4" id="furnished" checked={formData.furnished} onChange={handleFormSubmit} />
+              <input
+                type="checkbox"
+                className="w-4 h-4"
+                id="furnished"
+                onChange={handleFormSubmit}
+                checked={formData.furnished}
+              />
               <label htmlFor="" className="font-medium">
                 Furnished
               </label>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4" id="offer" checked={formData.offer} onChange={handleFormSubmit} />
+              <input
+                type="checkbox"
+                className="w-4 h-4"
+                id="offer"
+                checked={formData.offer}
+                onChange={handleFormSubmit}
+              />
               <label htmlFor="" className="font-medium">
                 Offer
               </label>
@@ -157,7 +267,7 @@ function CreateListing() {
                 min="1"
                 max="10"
                 className="p-3 rounded-md"
-                id="bed"
+                id="bedrooms"
                 value={formData.bed}
                 onChange={handleFormSubmit}
               />
@@ -170,7 +280,7 @@ function CreateListing() {
                 type="number"
                 min="1"
                 max="10"
-                id="bath"
+                id="bathrooms"
                 className="p-3 rounded-md"
                 value={formData.bath}
                 onChange={handleFormSubmit}
@@ -182,9 +292,9 @@ function CreateListing() {
             <div className="flex items-center gap-3 rounded-md">
               <input
                 type="number"
-                min="1"
-                max="10"
+                required
                 id="regularPrice"
+                min="500"
                 className="p-3 rounded-md"
                 value={formData.regularPrice}
                 onChange={handleFormSubmit}
@@ -196,9 +306,9 @@ function CreateListing() {
             <div className="flex items-center gap-3 rounded-md">
               <input
                 type="number"
-                min="1"
-                max="10"
+                required
                 id="discountPrice"
+                min="100"
                 className="p-3 rounded-md"
                 value={formData.disPrice}
                 onChange={handleFormSubmit}
@@ -220,6 +330,7 @@ function CreateListing() {
               type="file"
               accept="image/*"
               multiple
+              // required
               onChange={(e) => setFiles(e.target.files)}
               className="border p-2 rounded-md border-slate-300 w-full"
             />
@@ -235,9 +346,7 @@ function CreateListing() {
               )}
             </button>
           </div>
-          <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-3">
-            Create list
-          </button>
+
           {formData.imageUrls.map((imageUrl) => (
             <div key={imageUrl} className="flex justify-between items-center">
               <img
@@ -253,6 +362,9 @@ function CreateListing() {
               </button>
             </div>
           ))}
+          <button disabled={uploadLoading} className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-3">
+            Create list
+          </button>
         </div>
       </form>
       <ToastContainer position="top-right" />
