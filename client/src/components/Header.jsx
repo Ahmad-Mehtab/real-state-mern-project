@@ -35,6 +35,22 @@ function Header() {
               About
             </li>
           </Link>
+
+          {userData && (
+            <Link to="/create-listing">
+              <li className="sm:inline text-slate-700 hover:underline">
+                Create listing
+              </li>
+            </Link>
+          )}
+          {userData && (
+            <Link to="/listing">
+              <li className="sm:inline text-slate-700 hover:underline">
+                Show listing
+              </li>
+            </Link>
+          )}
+
           <Link to="/profile">
             {(userData && (
               <img
@@ -48,7 +64,6 @@ function Header() {
               </li>
             )}
           </Link>
-
           {/* <Link to='/profile'>
           
         </Link> */}

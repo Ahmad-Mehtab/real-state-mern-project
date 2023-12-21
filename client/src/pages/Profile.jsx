@@ -23,6 +23,8 @@ function Profile() {
   const [showSignOutAlert, setShowSignOutAlert] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [formData, setFormData] = useState({});
+  const [showUserData, setShowUserData] = useState();
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -129,6 +131,41 @@ function Profile() {
     setShowDeleteAlert(false);
   };
 
+  // Show user Create listing
+  const showUserCreateList = async () => {
+    // setLoading(true);
+  
+    try {
+      const response = await fetch(`api/user/listings/${userData._id}`);
+      const data = await response.json();
+      if (data.success === false) toast.error("Something went wrong");
+      else if(data.length === 0 ) toast.warn("no data found")
+      
+      setShowUserData(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+    //  finally {
+    //   setLoading(false); // Set loading to false regardless of success or failure
+    // }
+  };
+
+  const dltList = async (listId) => {
+    try {
+      const response = await fetch(`api/listing/delete/${listId}`,{
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (data.success === false) {
+        toast.error("Something went wrong");
+      }
+      setShowUserData((prev) => prev.filter((listing) => listing._id !== listId));
+      // showUserCreateList() 
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-lg w-full px-4">
       <h1 className="text-center my-5 text-2xl font-bold">Profile</h1>
@@ -213,6 +250,45 @@ function Profile() {
           message={"yes, delete"}
         />
       )}
+
+      <div className="my-5 text-center ">
+        <h3
+          className="font-bold text-xl text-green-700"
+          onClick={showUserCreateList}
+        >
+          Show listing
+        </h3>
+        {showUserData &&
+          showUserData.length > 0 &&
+          showUserData?.map((listData) => (
+            <div
+              key={listData._id}
+              className="flex items-center justify-between"
+            >
+        
+                <img
+                  src={listData.imageUrls[0]}
+                  alt="missing"
+                  className="w-20 mt-2"
+                />
+              
+              <Link to={`/listing/${listData._id}`}><p>{listData.name}</p></Link>
+              <div className="dltEditbtn flex gap-2">
+                <button
+                  className="bg-red-500 text-white p-1 rounded-md"
+                  onClick={() => dltList(listData._id)}
+                >
+                  Delete
+                </button>
+                <Link to={`/update-listing/${listData._id}`}>
+                <button className="bg-blue-500 text-white p-1 rounded-md">
+                  Edit
+                </button>
+                </Link>
+              </div>
+            </div>
+          ))}
+      </div>
       <ToastContainer position="top-right" />
     </div>
   );

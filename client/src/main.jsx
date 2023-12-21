@@ -20,6 +20,7 @@ import PrivateRouter from "./components/PrivateRouter.jsx";
 import Profile from "./pages/Profile.jsx";
 import CreateListing from "./pages/CreateListing.jsx";
 import Listing from "./pages/Listing.jsx";
+import UpdateListing from "./pages/UpdateListing.jsx";
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
           {
             path: "/create-listing",
             element: <CreateListing />
+          },
+          {
+            path: "/update-listing/:listingId",
+            element: <UpdateListing />
           },
           {
             path: "/listing",
