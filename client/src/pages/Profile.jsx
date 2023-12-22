@@ -28,6 +28,7 @@ function Profile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  console.log(showUserData);
   // firebase storage
   // allow read;
   // allow write: if
@@ -150,7 +151,7 @@ function Profile() {
     // }
   };
 
-  const dltList = async (listId) => {
+  const dltList = async (listId) => { 
     try {
       const response = await fetch(`api/listing/delete/${listId}`,{
         method: 'DELETE',

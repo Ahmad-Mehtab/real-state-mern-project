@@ -43,7 +43,10 @@ const router = createBrowserRouter([
         path: "/signin",
         element: <SignIn />,
       },
-      
+      {
+        path: "/listing/:listingId",
+        element: <Listing />
+      },
       {
         element: <PrivateRouter />,
         children: [
@@ -59,10 +62,7 @@ const router = createBrowserRouter([
             path: "/update-listing/:listingId",
             element: <UpdateListing />
           },
-          {
-            path: "/listing",
-            element: <Listing />
-          },
+        
         ],
       },
     ],
