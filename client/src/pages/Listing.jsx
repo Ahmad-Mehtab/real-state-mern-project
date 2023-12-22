@@ -4,7 +4,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import gif from "../assets/images/VAyR.gif";
 import { Swiper, SwiperSlide } from "swiper/react";
-import SwiperCore from "swiper";
 import "swiper/css/bundle";
 // Import Swiper styles
 // import required modules
@@ -17,19 +16,24 @@ import {
   FaParking,
   FaShare,
 } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 function Listing() {
   const [loading, setLoading] = useState(true);
   const [listingData, setListingData] = useState();
   const [copied, setCopied] = useState(false);
+  const [contactBtnHide, setContactBtnHide] = useState(false);
   const params = useParams();
-  console.log(listingData);
+
+  const { userData } = useSelector((state) => state.user);
+
   useEffect(() => {
     const showUserData = async () => {
       try {
         const listingId = params.listingId;
         const response = await fetch(`/api/listing/get/${listingId}`);
         const data = await response.json();
+      
 
         setListingData(data);
         setLoading(false);
@@ -52,6 +56,10 @@ function Listing() {
 
     showUserData();
   }, [params.listingId]);
+
+
+
+
   return (
     <div className="">
       {loading ? (
@@ -128,32 +136,36 @@ function Listing() {
             <div className="flex justify-between max-w-xl mt-5 flex-wrap">
               <p className="flex items-center gap-2 ">
                 <FaBed className="text-2xl" />{" "}
-                <p className="font-medium">
+                <span className="font-medium">
                   {listingData.bedrooms}{" "}
                   {listingData.bedrooms > 1 ? "Beds" : "Bed"}
-                </p>
+                </span>
               </p>
               <p className="flex items-center gap-2 ">
                 <FaBath className="text-2xl" />{" "}
-                <p className="font-medium">
+                <span className="font-medium">
                   {listingData.bathrooms}{" "}
                   {listingData.bathrooms > 1 ? "Baths" : "Bath"}
-                </p>
+                </span>
               </p>
               <p className="flex items-center gap-2 ">
                 <FaParking className="text-2xl" />{" "}
-                <p className="font-medium">
+                <span className="font-medium">
                   {listingData.parking ? "Parking" : "No parking"}
-                </p>
+                </span>
               </p>
               <p className="flex items-center gap-2 ">
                 <FaChair className="text-2xl" />{" "}
-                <p className="font-medium">
+                <span className="font-medium">
                   {listingData.furnished ? "Furnashid" : "Not Furnashid"}
-                </p>
+                </span>
               </p>
             </div>
-            <button className="uppercase rounded-md mx-auto w-full bg-slate-600 p-2 text-white font-bold mt-3">Contact Landlord</button>
+            {userData && listingData.useRef !== userData._id && !contactBtnHide && (
+              <button onClick={() => setContactBtnHide(true)} className="uppercase rounded-md mx-auto w-full bg-slate-600 p-2 text-white font-bold mt-3">
+                Contact Landlord
+              </button>
+            )}
           </div>
         </div>
       )}
