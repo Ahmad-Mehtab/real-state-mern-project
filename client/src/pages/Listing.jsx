@@ -17,6 +17,7 @@ import {
   FaShare,
 } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import Contact from "./Contact";
 
 function Listing() {
   const [loading, setLoading] = useState(true);
@@ -166,6 +167,7 @@ function Listing() {
                 Contact Landlord
               </button>
             )}
+            {contactBtnHide && <Contact listing={listingData}/>}
           </div>
         </div>
       )}
