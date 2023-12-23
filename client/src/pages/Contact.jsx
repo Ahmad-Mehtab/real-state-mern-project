@@ -4,7 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 
 function Contact({ listing }) {
   const [userInfo, setUserInfo] = useState(null);
-  const [message, setMessage] = useState();
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     const ContactPerson = async () => {
@@ -40,14 +40,14 @@ function Contact({ listing }) {
       </p>
       <textarea
         name="message"
-        id=""
+        id="message"
         className=" bg-slate-200  border border-gray-400  rounded-lg h-20 w-full"
         value={message}
         onChange={handleSubmit}
       ></textarea>
       <Link
         to={createMailtoLink()}
-        className="uppercase rounded-md mx-auto w-full bg-slate-600 p-2 text-white font-bold mt-1"
+        className="uppercase rounded-md mx-auto w-full bg-slate-600 p-2 text-center text-white font-bold mt-1"
       >
         Submit
       </Link>
