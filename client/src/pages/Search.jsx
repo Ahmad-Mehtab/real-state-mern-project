@@ -35,7 +35,7 @@ function Search() {
       orderFromUrl
     ) {
       setSearchData({
-        searchTerm: searchTermFromUrl,
+        searchTerm: searchTermFromUrl || '', 
         type: typeFromUrl || "all",
         parking: parkingFromUrl === "true" ? true : false,
         furnished: furnishedFromUrl === "true" ? true : false,
@@ -43,6 +43,7 @@ function Search() {
         sort: sortFromUrl || "created_at",
         order: orderFromUrl || "desc",
       });
+    //   setSearchData(old=>({...old,searchTerm:searchTermFromUrl}))
     }
   }, [location.search, queryParams]);
   const handleChange = (e) => {
