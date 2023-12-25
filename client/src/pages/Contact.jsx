@@ -11,7 +11,7 @@ function Contact({ listing }) {
       try {
         const res = await fetch(`/api/user/${listing.userRef}`);
         const data = await res.json();
-        console.log("data: ", data);
+      
         if (data.success === false) {
           toast.error("something went wrong");
         }
@@ -24,13 +24,15 @@ function Contact({ listing }) {
     ContactPerson();
   }, [listing.userRef]);
 
-  const handleSubmit = (e) => {
-    setMessage(e.target.value);
-  };
+  // const handleSubmit = (e) => {
+  //   setMessage(e.target.value);
+  // };
   const createMailtoLink = () => {
     const subject = `Regarding ${listing.name}`;
     const body = encodeURIComponent(message);
-    return `mailto:${userInfo?.email}?subject=${subject}&body=${body}`;
+    const mailtoLink = `mailto:${userInfo?.email}?subject=${subject}&body=${body}`;
+    
+    return mailtoLink;
   };
   return (
     <div className="flex flex-col gap-2 mt-6 w-full md:w-2/3">
@@ -41,13 +43,14 @@ function Contact({ listing }) {
       <textarea
         name="message"
         id="message"
-        className=" bg-slate-200  border border-gray-400  rounded-lg h-20 w-full"
+        className=" bg-slate-200  border border-gray-400  rounded-lg h-20 w-full p-2"
         value={message}
-        onChange={handleSubmit}
+        
+        onChange={(e) => setMessage(e.target.value)}
       ></textarea>
       <Link
         to={createMailtoLink()}
-        className="uppercase rounded-md mx-auto w-full bg-slate-600 p-2 text-center text-white font-bold mt-1"
+        className="uppercase rounded-md mx-auto w-full bg-slate-600 p-2 text-center  text-white font-bold mt-1"
       >
         Submit
       </Link>

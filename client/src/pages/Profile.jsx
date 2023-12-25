@@ -28,7 +28,6 @@ function Profile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log(showUserData);
   // firebase storage
   // allow read;
   // allow write: if

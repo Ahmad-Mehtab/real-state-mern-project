@@ -21,6 +21,7 @@ import Profile from "./pages/Profile.jsx";
 import CreateListing from "./pages/CreateListing.jsx";
 import Listing from "./pages/Listing.jsx";
 import UpdateListing from "./pages/UpdateListing.jsx";
+import Search from "./pages/Search.jsx";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
       {
         path: "/listing/:listingId",
         element: <Listing />
+      },
+      {
+        path: "/search",
+        element: <Search/>
       },
       {
         element: <PrivateRouter />,
