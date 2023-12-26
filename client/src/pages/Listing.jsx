@@ -32,10 +32,10 @@ function Listing() {
     const showUserData = async () => {
       try {
         const listingId = params.listingId;
+        
         const response = await fetch(`/api/listing/get/${listingId}`);
         const data = await response.json();
       
-
         setListingData(data);
         setLoading(false);
         if (data.success === false) {
@@ -76,7 +76,7 @@ function Listing() {
             modules={[Navigation, Pagination, Mousewheel, Keyboard]}
             className="mySwiper"
           >
-            {listingData.imageUrls.map((urls, index) => (
+            {listingData.imageUrls?.map((urls, index) => (
               <SwiperSlide key={index}>
                 <div
                   className="h-[500px]"
@@ -125,10 +125,11 @@ function Listing() {
                 <div className="bg-green-700 px-2 py-1 w-full max-w-[150px] text-md font-bold rounded text-white">
                   $
                   {Number.parseFloat(
-                    listingData.regularPrice - listingData.discountPrice
-                  )}
+                listingData.discountPrice
+                  )} discount
                 </div>
-              )}
+                
+              ) }
             </div>
             <p className="mt-3">
               <span className="font-bold">Description - </span>{" "}

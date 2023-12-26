@@ -132,6 +132,7 @@ function CreateListing() {
         }),
       });
       const data = await res.json();
+    
       if (data.success === false || data.statusCode === 500) {
         toast.error("Something getting wrong");
         return;
@@ -139,7 +140,7 @@ function CreateListing() {
       toast.success("Form submitted successfully");
       resetForm();
       setTimeout(() => {
-        navigate("/listing")
+        navigate(`/listing/${data._id}`)
       }, 3000);
     } catch (error) {
       toast.error(error);

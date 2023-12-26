@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import ListingItem from "./ListingItem";
+import gif from "../assets/images/VAyR.gif";
 
 function Search() {
   const navigate = useNavigate();
   const [queryParams, setQueryParams] = useSearchParams();
+  const [listingData, setListingData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [visibleItems, setVisibleItems] = useState(8);
   const [searchData, setSearchData] = useState({
     searchTerm: "",
     type: "all",
@@ -24,7 +29,7 @@ function Search() {
     const offerFromUrl = urlParams.get("offer");
     const sortFromUrl = urlParams.get("sort");
     const orderFromUrl = urlParams.get("order");
-    console.log("searchTermFromUrl", searchTermFromUrl);
+
     if (
       searchTermFromUrl ||
       typeFromUrl ||
@@ -35,7 +40,7 @@ function Search() {
       orderFromUrl
     ) {
       setSearchData({
-        searchTerm: searchTermFromUrl || '', 
+        searchTerm: searchTermFromUrl || "",
         type: typeFromUrl || "all",
         parking: parkingFromUrl === "true" ? true : false,
         furnished: furnishedFromUrl === "true" ? true : false,
@@ -43,9 +48,27 @@ function Search() {
         sort: sortFromUrl || "created_at",
         order: orderFromUrl || "desc",
       });
-    //   setSearchData(old=>({...old,searchTerm:searchTermFromUrl}))
+      //   setSearchData(old=>({...old,searchTerm:searchTermFromUrl}))
     }
+
+    const fetchListingData = async () => {
+      try {
+        setLoading(true);
+        const searchQuery = urlParams.toString();
+        const res = await fetch(`/api/listing/get?${searchQuery}`);
+        const data = await res.json();
+        // if (data.length > 8) {
+        //   setShowMore(true);
+        // } else {
+        //   setShowMore(false);
+        // }
+        setListingData(data);
+        setLoading(false);
+      } catch (error) {}
+    };
+    fetchListingData();
   }, [location.search, queryParams]);
+
   const handleChange = (e) => {
     const targetId = e.target.id;
     if (targetId === "all" || targetId === "sell" || targetId === "rent") {
@@ -75,8 +98,8 @@ function Search() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    queryParams.set("searchTerm", searchData.searchTerm);
     const urlParams = new URLSearchParams();
-    urlParams.set("searchTerm", searchData.searchTerm);
     urlParams.set("type", searchData.type);
     urlParams.set("parking", searchData.parking);
     urlParams.set("furnished", searchData.furnished);
@@ -88,13 +111,19 @@ function Search() {
     navigate(`/search?${searchQuery}`);
   };
 
+  const handleShowMore = () => {
+    // Increase the number of visible items (e.g., show the next 8 items)
+    setVisibleItems((prevVisibleItems) => prevVisibleItems + 8);
+  };
+
+  const showMoreButton = !loading && visibleItems < listingData.length;
+
   return (
     <main className="xs:p-6 ">
-      <div className="flex flex-col md:flex-row gap-4">
-
+      <div className="flex flex-col md:flex-row gap-4 ">
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col md:min-h-screen border-b-2 md:border-r-2 p-5 gap-6"
+          className="flex flex-col md:min-h-screen border-b-2 md:border-r-2 p-5 gap-6 min-w-[400px]"
         >
           <div className="flex items-center gap-2">
             <label htmlFor="" className="whitespace-nowrap font-bold">
@@ -105,7 +134,6 @@ function Search() {
               name="name"
               placeholder="Title"
               id="searchTerm"
-              required
               value={searchData.searchTerm}
               onChange={handleChange}
               className="bg-white w-full p-3 rounded-md border border-slate-300 my-1.5"
@@ -220,6 +248,24 @@ function Search() {
           <h1 className="text-3xl text-slate-700 p-3 font-semibold border-b-2">
             Listing Result:
           </h1>
+          <div className="flex flex-wrap sm:justify-start justify-center ">
+            {loading && <img src={gif} className="w-36 mx-auto mt-5" alt="" />}
+            {!loading && listingData.length === 0 && <p>Data not found</p>}
+            {!loading &&
+              listingData &&
+              listingData.slice(0, visibleItems).map((item) => (
+                <ListingItem itemListing={item} key={item._id} />
+              ))}
+          </div>
+          {showMoreButton && (
+        <button
+          type="button"
+          className="text-green-700 font-semibold text-lg mt-3"
+          onClick={handleShowMore}
+        >
+          Show more
+        </button>
+      )}
         </div>
       </div>
       {/* <ToastContainer position="top-right" /> */}
