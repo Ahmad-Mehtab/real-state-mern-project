@@ -140,7 +140,7 @@ function Profile() {
       const data = await response.json();
       if (data.success === false) toast.error("Something went wrong");
       else if(data.length === 0 ) toast.warn("no data found")
-      
+   
       setShowUserData(data);
     } catch (error) {
       console.error("Error fetching data:", error);

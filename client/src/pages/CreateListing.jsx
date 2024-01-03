@@ -140,7 +140,8 @@ function CreateListing() {
       toast.success("Form submitted successfully");
       resetForm();
       setTimeout(() => {
-        navigate(`/listing/${data._id}`)
+        // navigate(`/listing/${data._id}`)
+        navigate(`/`)
       }, 3000);
     } catch (error) {
       toast.error(error);
