@@ -37,7 +37,7 @@ function SignUp() {
   };
 
   return (
-    <div className="p-3 max-w-lg mx-auto w-full">
+    <div className="p-3 max-w-lg mx-auto w-full h-[643px]">
       <h1 className="text-3xl text-center font-semibold my-7">Sign Up</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(signUp)}>
         <input

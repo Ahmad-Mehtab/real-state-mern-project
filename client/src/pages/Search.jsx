@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ListingItem from "./ListingItem";
-import gif from "../assets/images/VAyR.gif";
+import gif from "../assets/images/YlWC.gif";
 
 function Search() {
   const navigate = useNavigate();

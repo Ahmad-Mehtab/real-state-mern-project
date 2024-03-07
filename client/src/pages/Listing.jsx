@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import gif from "../assets/images/VAyR.gif";
+import gif from "../assets/images/YlWC.gif";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css/bundle";
 // Import Swiper styles
